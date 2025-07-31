@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Music Link Converter</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #6a62d5, #8c7dee);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: #ffffff;
+      color: #26324B;
+      width: 100%;
+      max-width: 460px;
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(106, 98, 213, 0.3);
+      padding: 32px 28px 36px 28px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 6px 0;
+      font-weight: 700;
+      font-size: 2.1rem;
+      letter-spacing: 1.2px;
+      color: #2a2a4a;
+      user-select: none;
+    }
+    .creator-link {
+      display: inline-block;
+      margin-bottom: 14px;
+      font-size: 0.96rem;
+      font-weight: 500;
+      background: rgba(106,98,213,0.08);
+      color: #6a62d5;
+      border-radius: 9px;
+      padding: 4px 13px 4px 13px;
+      transition: background 0.18s, color 0.18s;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-top: -3px;
+    }
+    .creator-link:hover,
+    .creator-link:focus {
+      color: #fff;
+      background: #6a62d5;
+      text-decoration: underline;
+      outline: none;
+    }
+    p.desc {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      color: #555a79;
+      line-height: 1.4;
+      user-select: none;
+    }
+    form {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    input#music-link {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #d5d9ef;
+      transition: border-color 0.3s ease;
+      outline-offset: 2px;
+      outline-color: #6a62d5;
+      user-select: text;
+      color: #222;
+    }
+    input#music-link::placeholder {
+      color: #a6a9be;
+      font-style: italic;
+    }
+    input#music-link:focus {
+      border-color: #6a62d5;
+      box-shadow: 0 0 6px 2px rgba(106, 98, 213, 0.35);
+    }
+    button {
+      background: #6a62d5;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 8px 15px rgba(106, 98, 213, 0.5);
+      transition: background-color 0.25s, box-shadow 0.25s, transform 0.1s;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    button:hover,
+    button:focus {
+      background: #554bae;
+      box-shadow: 0 12px 25px rgba(85, 75, 174, 0.7);
+      outline: none;
+      transform: translateY(-1px);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    .btn-icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    #message {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      display: none;
+      user-select: none;
+    }
+    #message.error {
+      background-color: #f56260;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(245, 98, 96, 0.4);
+    }
+    #message.success {
+      background-color: #45b572;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(69, 181, 114, 0.4);
+    }
+    /* Universal Link Display & Copy */
+    #universal-link-container {
+      margin-top: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      user-select: text;
+    }
+    #universal-link {
+      font-size: 1rem;
+      color: #6a62d5;
+      text-decoration: underline;
+      cursor: pointer;
+      word-break: break-all;
+      max-width: 100%;
+    }
+    #copy-btn {
+      background: #6a62d5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(106, 98, 213, 0.5);
+      transition: background-color 0.25s, box-shadow 0.25s;
+      user-select: none;
+    }
+    #copy-btn:hover,
+    #copy-btn:focus {
+      background: #554bae;
+      box-shadow: 0 12px 25px rgba(85, 75, 174, 0.7);
+      outline: none;
+    }
+    /* History */
+    #history-container {
+      margin-top: 25px;
+      text-align: left;
+      color: #555a79;
+    }
+    #history-container h3 {
+      margin-bottom: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      user-select: none;
+    }
+    #history-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #history-list li {
+      margin: 6px 0;
+    }
+    #history-list li a {
+      color: #6a62d5;
+      text-decoration: underline;
+      font-size: 0.95rem;
+      cursor: pointer;
+      word-break: break-all;
+    }
+    #history-list li a:hover,
+    #history-list li a:focus {
+      text-decoration: none;
+      outline: none;
+    }
+    /* Loading State */
+    #loading-msg {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #a6a9be;
+      margin-top: 20px;
+      user-select: none;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 28px 20px 32px 20px;
+        max-width: 90vw;
+      }
+      button {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+      }
+      input#music-link {
+        font-size: 0.95rem;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>Music Link Converter</h1>
+    <a
+      class="creator-link"
+      href="https://in.linkedin.com/in/yadnesh-kulkarni"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="Connect on LinkedIn"
+    >
+      Creator
+    </a>
+    <p class="desc">
+      Paste a music link (Amazon Music, Spotify, Apple Music, etc.) below and get a universal share link instantly.
+    </p>
+    <form id="converter-form" novalidate>
+      <input
+        type="url"
+        id="music-link"
+        name="music-link"
+        placeholder="Paste your music link here..."
+        aria-label="Music URL input"
+        autocomplete="off"
+        required
+        pattern="https?://.+"
+      />
+      <button type="submit" aria-live="polite" aria-label="Convert link to universal music link">
+        Convert
+        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M10 17l5-5-5-5v10z"/>
+        </svg>
+      </button>
+    </form>
+
+    <div id="loading-msg" aria-live="polite">Working...</div>
+
+    <div id="message" role="alert" aria-live="assertive"></div>
+
+    <div id="universal-link-container" aria-live="polite">
+      <a href="#" id="universal-link" target="_blank" rel="noopener noreferrer"></a>
+      <button id="copy-btn" type="button">Copy Link</button>
+    </div>
+
+    <section id="history-container" aria-label="Conversion History">
+      <h3>Last converted links:</h3>
+      <ul id="history-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById('converter-form');
+      const input = document.getElementById('music-link');
+      const message = document.getElementById('message');
+      const loadingMsg = document.getElementById('loading-msg');
+      const universalLinkContainer = document.getElementById('universal-link-container');
+      const universalLinkAnchor = document.getElementById('universal-link');
+      const copyBtn = document.getElementById('copy-btn');
+      const historyList = document.getElementById('history-list');
+
+      const HISTORY_KEY = 'musicLinkConverterHistory';
+      const MAX_HISTORY = 3;
+
+      // Load history from localStorage
+      function loadHistory() {
+        const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        renderHistory(hist);
+        return hist;
+      }
+
+      // Save to history (keep it unique and max 3)
+      function saveToHistory(url) {
+        let hist = loadHistory();
+        // Remove if exists
+        hist = hist.filter(item => item !== url);
+        // Add to front
+        hist.unshift(url);
+        // Limit size
+        if (hist.length > MAX_HISTORY) hist = hist.slice(0, MAX_HISTORY);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+        renderHistory(hist);
+      }
+
+      // Render history list
+      function renderHistory(hist) {
+        historyList.innerHTML = '';
+        if (hist.length === 0) {
+          document.getElementById('history-container').style.display = 'none';
+          return;
+        }
+        document.getElementById('history-container').style.display = 'block';
+        hist.forEach(link => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = 'https://song.link/' + encodeURIComponent(link);
+          a.textContent = link;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.title = 'Open universal link for this music track';
+          li.appendChild(a);
+          historyList.appendChild(li);
+        });
+      }
+
+      // Copy to clipboard helper
+      function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        } else {
+          // Fallback older method:
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.pointerEvents = 'none';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return Promise.resolve();
+          } catch (err) {
+            document.body.removeChild(textarea);
+            return Promise.reject(err);
+          }
+        }
+      }
+
+      // Show messages
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = type;
+        message.style.display = 'block';
+      }
+      function hideMessage() {
+        message.style.display = 'none';
+      }
+      function showLoading() {
+        loadingMsg.style.display = 'block';
+      }
+      function hideLoading() {
+        loadingMsg.style.display = 'none';
+      }
+
+      // On form submit
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideMessage();
+        universalLinkContainer.style.display = 'none';
+        showLoading();
+
+        const url = input.value.trim();
+        if (!url) {
+          hideLoading();
+          showMessage('Please paste a music link.', 'error');
+          return;
+        }
+
+        // Validate URL format
+        try {
+          new URL(url);
+        } catch {
+          hideLoading();
+          showMessage('Invalid URL format. Please enter a valid link.', 'error');
+          return;
+        }
+
+        // Prepare universal link
+        const universalLink = 'https://song.link/' + encodeURIComponent(url);
+
+        // Update UI
+        hideLoading();
+        showMessage('Here is your universal link:', 'success');
+        universalLinkAnchor.href = universalLink;
+        universalLinkAnchor.textContent = universalLink;
+        universalLinkContainer.style.display = 'flex';
+
+        // Save to history
+        saveToHistory(url);
+
+        // Clear input
+        input.value = '';
+        input.focus();
+      });
+
+      // Copy button event
+      copyBtn.addEventListener('click', () => {
+        const link = universalLinkAnchor.textContent;
+        if (!link) return;
+
+        copyToClipboard(link).then(() => {
+          showMessage('Universal link copied to clipboard!', 'success');
+          setTimeout(hideMessage, 2500);
+        }).catch(() => {
+          showMessage('Failed to copy. Please copy manually.', 'error');
+        });
+      });
+
+      // Initialize
+      loadHistory();
+    })();
+  </script>
+</body>
+</html>
